@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="حازم">
+<meta name="theme-color" content="#050d1f">
+<title>حازم - الثانوية العامة 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f0c040;
+    --gold-light: #fff5c0;
+    --gold-dim: rgba(240,192,64,0.15);
+    --bg: #050d1f;
+    --bg2: #0a1628;
+    --bg3: #0d1e36;
+    --text: #e8f0ff;
+    --text-dim: #6a8aaf;
+    --accent-blue: #4090f0;
+    --accent-green: #00e5a0;
+    --accent-purple: #c840f0;
+    --accent-red: #f04060;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); }
+  body { font-family: 'Cairo', sans-serif; color: var(--text); direction: rtl; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+  /* SPLASH */
+  #splash {
+    position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute; border-radius: 50%; background: #fff;
+    animation: starPulse var(--d, 3s) var(--delay, 0s) infinite;
+  }
+  @keyframes starPulse { 0%,100%{opacity:.2;transform:scale(1)} 50%{opacity:.9;transform:scale(1.6)} }
+  .orb {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(240,192,64,0.18) 0%, transparent 70%);
+    width: 350px; height: 350px;
+    animation: orbFloat 4s ease-in-out infinite;
+  }
+  @keyframes orbFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-25px) scale(1.06)} }
+  .splash-logo { animation: logoIn 1.2s cubic-bezier(.34,1.56,.64,1) .4s both; text-align: center; z-index:1; }
+  @keyframes logoIn { 0%{opacity:0;transform:scale(.4) translateY(50px)} 70%{transform:scale(1.08) translateY(-8px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+  .splash-icon { font-size: 90px; filter: drop-shadow(0 0 40px rgba(240,192,64,.9)); }
+  .splash-title {
+    font-size: 80px; font-weight: 900; letter-spacing: 6px; line-height: 1;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shimmer 2s linear infinite;
+  }
+  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+  .splash-sub { color: #7a9abf; font-size: 17px; font-weight: 400; margin-top: 8px; animation: fadeUp .8s ease 1.2s both; }
+  .splash-dots { display: flex; gap: 8px; justify-content: center; margin-top: 35px; animation: fadeUp .8s ease 1.6s both; }
+  .splash-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); animation: dotPulse 1s var(--d) infinite; }
+  @keyframes dotPulse { 0%,100%{opacity:.25;transform:scale(1)} 50%{opacity:1;transform:scale(1.5)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(25px)} to{opacity:1;transform:translateY(0)} }
+
+  /* APP SHELL */
+  #app { display: none; height: 100vh; flex-direction: column; max-width: 430px; margin: 0 auto; position: relative; }
+
+  /* SCREENS */
+  .screen { display: none; flex: 1; overflow-y: auto; padding-bottom: 75px; }
+  .screen.active { display: block; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid rgba(240,192,64,0.2);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+  }
+  .header-title {
+    font-size: 17px; font-weight: 800;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .back-btn {
+    background: rgba(240,192,64,0.1); border: 1px solid rgba(240,192,64,0.3);
+    color: var(--gold); border-radius: 10px; padding: 6px 14px; font-size: 13px;
+    cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;
+    transition: all .2s;
+  }
+  .back-btn:active { transform: scale(.94); background: rgba(240,192,64,0.2); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    background: rgba(5,13,31,.97); border-top: 1px solid rgba(240,192,64,0.2);
+    display: flex; padding: 6px 0 10px; flex-shrink: 0;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .nav-btn {
+    flex: 1; background: transparent; border: none;
+    color: var(--text-dim); cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 3px; padding: 4px 0; transition: all .2s;
+  }
+  .nav-btn.active { color: var(--gold); }
+  .nav-btn span.icon { font-size: 20px; transition: transform .2s; }
+  .nav-btn.active span.icon { transform: scale(1.15); }
+  .nav-btn span.label { font-size: 10px; font-family: 'Cairo', sans-serif; font-weight: 600; }
+  .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); display: none; }
+  .nav-btn.active .nav-dot { display: block; }
+
+  /* CARDS */
+  .card {
+    background: linear-gradient(135deg, var(--bg3), var(--bg2));
+    border: 1px solid rgba(240,192,64,0.1); border-radius: 18px;
+    padding: 18px; margin-bottom: 12px; cursor: pointer; transition: all .2s;
+    display: block; width: 100%; text-align: right;
+  }
+  .card:active { transform: scale(.97); opacity: .85; }
+
+  /* SUBJECT CARDS */
+  .subject-card { border-radius: 20px; padding: 18px 20px; margin-bottom: 12px; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 14px; border: none; width: 100%; }
+  .subject-card:active { transform: scale(.97); }
+
+  /* BADGES */
+  .badge {
+    display: inline-block; border-radius: 12px; padding: 3px 10px; font-size: 11px; font-weight: 700;
+    font-family: 'Cairo', sans-serif;
+  }
+  .badge-gold { background: rgba(240,192,64,0.12); border: 1px solid rgba(240,192,64,0.3); color: var(--gold); }
+  .badge-blue { background: rgba(64,144,240,0.12); border: 1px solid rgba(64,144,240,0.3); color: var(--accent-blue); }
+  .badge-green { background: rgba(0,229,160,0.12); border: 1px solid rgba(0,229,160,0.3); color: var(--accent-green); }
+  .badge-purple { background: rgba(200,64,240,0.12); border: 1px solid rgba(200,64,240,0.3); color: var(--accent-purple); }
+
+  /* LINK BTN */
+  .link-btn {
+    display: block; border-radius: 13px; padding: 12px 16px; text-align: center;
+    text-decoration: none; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 700;
+    margin-bottom: 8px; transition: all .2s;
+  }
+  .link-btn:active { transform: scale(.97); }
+  .link-btn-gold { background: rgba(240,192,64,0.1); border: 1px solid rgba(240,192,64,0.25); color: var(--gold); }
+  .link-btn-blue { background: rgba(64,144,240,0.1); border: 1px solid rgba(64,144,240,0.25); color: var(--accent-blue); }
+  .link-btn-green { background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.25); color: var(--accent-green); }
+  .link-btn-purple { background: rgba(200,64,240,0.1); border: 1px solid rgba(200,64,240,0.25); color: var(--accent-purple); }
+  .link-btn-red { background: rgba(255,100,0,0.1); border: 1px solid rgba(255,100,0,0.3); color: #ff8040; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 15px; font-weight: 700; color: #c8d8f0; margin-bottom: 10px; margin-top: 4px; }
+
+  /* INPUT */
+  .search-input {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(240,192,64,0.25);
+    border-radius: 14px; padding: 12px 16px; color: var(--text); font-size: 14px;
+    font-family: 'Cairo', sans-serif; text-align: right; outline: none; direction: rtl;
+  }
+  .search-input::placeholder { color: var(--text-dim); }
+  .search-input:focus { border-color: rgba(240,192,64,0.5); }
+  .search-btn {
+    background: linear-gradient(135deg, var(--gold), #c89010);
+    border: none; border-radius: 14px; padding: 12px 20px;
+    color: var(--bg); font-size: 14px; font-weight: 800;
+    cursor: pointer; font-family: 'Cairo', sans-serif; flex-shrink: 0;
+    transition: all .2s;
+  }
+  .search-btn:active { transform: scale(.96); }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  .fade-in { animation: fadeIn .35s ease both; }
+  @keyframes glow { 0%,100%{box-shadow:0 0 10px rgba(240,192,64,.2)} 50%{box-shadow:0 0 28px rgba(240,192,64,.6)} }
+  @keyframes pulse2 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+
+  /* SCORE BAR */
+  .score-row { margin-bottom: 14px; }
+  .score-head { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .score-bars { display: flex; gap: 4px; }
+  .score-seg { border-radius: 8px; padding: 5px 8px; text-align: center; flex: var(--flex, 1); }
+
+  /* TOGGLE BTNS */
+  .toggle-group { display: flex; gap: 8px; margin-bottom: 14px; }
+  .toggle-btn {
+    flex: 1; padding: 9px; border-radius: 14px; font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'Cairo', sans-serif; transition: all .2s; border: none;
+  }
+
+  /* FILTER PILLS */
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filter-pill {
+    background: rgba(240,192,64,0.08); border: 1px solid rgba(240,192,64,0.25);
+    color: var(--gold); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; font-family: 'Cairo', sans-serif; transition: all .2s;
+  }
+  .filter-pill.active { background: var(--gold); color: var(--bg); }
+
+  p { line-height: 1.75; }
+</style>
+</head>
+<body>
+
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+  <div class="orb"></div>
+  <div id="stars-container"></div>
+  <div class="splash-logo">
+    <div class="splash-icon">🎓</div>
+    <div class="splash-title">حازم</div>
+    <div class="splash-sub">دليلك الشامل • الثانوية العامة 2026</div>
+    <div class="splash-dots">
+      <div class="splash-dot" style="--d:0s"></div>
+      <div class="splash-dot" style="--d:.15s"></div>
+      <div class="splash-dot" style="--d:.3s"></div>
+      <div class="splash-dot" style="--d:.45s"></div>
+      <div class="splash-dot" style="--d:.6s"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+
+  <!-- ============ HOME ============ -->
+  <div class="screen active" id="screen-home">
+    <div style="overflow-y:auto;height:100%">
+      <!-- Hero -->
+      <div style="background:linear-gradient(135deg,#0a1628,#0d2040,#0a1628);padding:36px 22px 28px;text-align:center;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(240,192,64,.12) 0%,transparent 70%)"></div>
+        <div style="font-size:52px;animation:pulse2 3s ease-in-out infinite">🎓</div>
+        <div style="font-size:46px;font-weight:900;background:linear-gradient(135deg,#f0c040,#fff5c0,#f0c040);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;letter-spacing:4px;line-height:1.1">حازم</div>
+        <div style="color:#7a9abf;font-size:14px;margin-top:6px">دليلك الشامل للثانوية العامة 2026</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+          <span class="badge badge-gold">علمى رياضه ✓</span>
+          <span class="badge badge-gold">علمى علوم ✓</span>
+          <span class="badge badge-gold">لغات ✓</span>
+          <span class="badge badge-gold">رسمي ✓</span>
+        </div>
+      </div>
+
+      <div style="padding:18px 16px">
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+          <div class="fade-in" style="background:linear-gradient(135deg,#0d1e36,#0a1628);border:1px solid rgba(240,192,64,.15);border-radius:16px;padding:14px 8px;text-align:center">
+            <div style="font-size:22px">📚</div>
+            <div style="font-size:22px;font-weight:900;color:var(--gold)">6</div>
+            <div style="font-size:11px;color:var(--text-dim)">مواد دراسية</div>
+          </div>
+          <div class="fade-in" style="background:linear-gradient(135deg,#0d1e36,#0a1628);border:1px solid rgba(240,192,64,.15);border-radius:16px;padding:14px 8px;text-align:center;animation-delay:.1s">
+            <div style="font-size:22px">🎬</div>
+            <div style="font-size:22px;font-weight:900;color:var(--gold)">50+</div>
+            <div style="font-size:11px;color:var(--text-dim)">درس وفيديو</div>
+          </div>
+          <div class="fade-in" style="background:linear-gradient(135deg,#0d1e36,#0a1628);border:1px solid rgba(240,192,64,.15);border-radius:16px;padding:14px 8px;text-align:center;animation-delay:.2s">
+            <div style="font-size:22px">✅</div>
+            <div style="font-size:22px;font-weight:900;color:var(--gold)">200+</div>
+            <div style="font-size:11px;color:var(--text-dim)">تمرين محلول</div>
+          </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="section-title">⚡ وصول سريع</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+          <button onclick="showScreen('subjects')" style="background:linear-gradient(135deg,#1a3a6b,#050d1f);border:1px solid rgba(64,144,240,.25);border-radius:16px;padding:16px 14px;text-align:right;cursor:pointer;transition:all .2s" class="card" onclick="">
+            <div style="font-size:28px;margin-bottom:6px">📚</div>
+            <div style="font-size:13px;font-weight:700;color:#e0ecff;font-family:'Cairo',sans-serif">المواد الدراسية</div>
+            <div style="font-size:11px;color:#4a8abf;margin-top:2px;font-family:'Cairo',sans-serif">شرح + فيديو + تمارين</div>
+          </button>
+          <button onclick="showScreen('exams')" style="background:linear-gradient(135deg,#1a3a00,#050d1f);border:1px solid rgba(0,229,160,.25);border-radius:16px;padding:16px 14px;text-align:right;cursor:pointer;transition:all .2s" class="card">
+            <div style="font-size:28px;margin-bottom:6px">📝</div>
+            <div style="font-size:13px;font-weight:700;color:#e0ecff;font-family:'Cairo',sans-serif">نماذج الوزارة</div>
+            <div style="font-size:11px;color:#3a8a6a;margin-top:2px;font-family:'Cairo',sans-serif">2026 + السنوات الماضية</div>
+          </button>
+          <button onclick="showScreen('search')" style="background:linear-gradient(135deg,#3b0a00,#050d1f);border:1px solid rgba(240,100,64,.25);border-radius:16px;padding:16px 14px;text-align:right;cursor:pointer;transition:all .2s" class="card">
+            <div style="font-size:28px;margin-bottom:6px">🔍</div>
+            <div style="font-size:13px;font-weight:700;color:#e0ecff;font-family:'Cairo',sans-serif">البحث الشامل</div>
+            <div style="font-size:11px;color:#8a4a3a;margin-top:2px;font-family:'Cairo',sans-serif">داخلي + مواقع خارجية</div>
+          </button>
+          <button onclick="showScreen('sites')" style="background:linear-gradient(135deg,#1a003b,#050d1f);border:1px solid rgba(200,64,240,.25);border-radius:16px;padding:16px 14px;text-align:right;cursor:pointer;transition:all .2s" class="card">
+            <div style="font-size:28px;margin-bottom:6px">🌐</div>
+            <div style="font-size:13px;font-weight:700;color:#e0ecff;font-family:'Cairo',sans-serif">مواقع تعليمية</div>
+            <div style="font-size:11px;color:#7a4abf;margin-top:2px;font-family:'Cairo',sans-serif">وزارة + منصات مجانية</div>
+          </button>
+        </div>
+
+        <!-- Motivation -->
+        <div style="background:linear-gradient(135deg,rgba(240,192,64,.07),rgba(240,192,64,.02));border:1px solid rgba(240,192,64,.22);border-radius:20px;padding:20px;animation:glow 4s ease-in-out infinite">
+          <div style="font-size:20px;margin-bottom:8px">💪</div>
+          <div style="font-size:15px;font-weight:700;color:var(--gold);line-height:1.65">"النجاح ليس عن الحظ — هو عن الاستعداد"</div>
+          <div style="font-size:12px;color:#7a9abf;margin-top:7px">ابدأ مراجعتك اليوم • الثانوية 2026 في متناول يدك</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SUBJECTS LIST ============ -->
+  <div class="screen" id="screen-subjects">
+    <div class="header">
+      <div class="header-title">المواد الدراسية</div>
+      <div style="font-size:26px">📚</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px">اختر المادة للوصول إلى الشرح والفيديوهات والأسئلة</div>
+      <div id="subjects-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ SUBJECT DETAIL ============ -->
+  <div class="screen" id="screen-subject-detail">
+    <div class="header">
+      <button class="back-btn" onclick="showScreen('subjects')">→ رجوع</button>
+      <div class="header-title" id="subj-detail-title"></div>
+      <div id="subj-detail-icon" style="font-size:26px"></div>
+    </div>
+    <div id="subj-detail-hero" style="padding:22px 20px;text-align:center"></div>
+    <div style="padding:16px">
+      <div class="section-title">📋 الوحدات الدراسية</div>
+      <div id="chapters-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ CHAPTER DETAIL ============ -->
+  <div class="screen" id="screen-chapter-detail">
+    <div class="header">
+      <button class="back-btn" onclick="backToSubject()">→ رجوع</button>
+      <div class="header-title" id="chap-detail-title"></div>
+      <div style="font-size:26px">📖</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px">اضغط على أي درس للشرح والفيديو والأسئلة</div>
+      <div id="lessons-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ LESSON DETAIL ============ -->
+  <div class="screen" id="screen-lesson-detail">
+    <div class="header">
+      <button class="back-btn" onclick="backToChapter()">→ رجوع</button>
+      <div class="header-title" id="lesson-title-h"></div>
+      <div style="font-size:24px">📖</div>
+    </div>
+    <div style="padding:16px" id="lesson-content"></div>
+  </div>
+
+  <!-- ============ EXAMS ============ -->
+  <div class="screen" id="screen-exams">
+    <div class="header">
+      <div class="header-title">الامتحانات والنماذج</div>
+      <div style="font-size:26px">📝</div>
+    </div>
+    <div style="padding:16px">
+
+      <!-- Ministry 2026 -->
+      <div style="background:linear-gradient(135deg,#0a1f3a,#050d1f);border:1px solid rgba(64,144,240,.3);border-radius:20px;padding:20px;margin-bottom:16px;animation:glow 4s ease-in-out infinite">
+        <div style="font-size:16px;font-weight:800;color:var(--accent-blue);margin-bottom:8px">🏛️ نماذج وزارة التربية والتعليم 2026</div>
+        <div style="font-size:13px;color:#7a9abf;margin-bottom:14px;line-height:1.7">النماذج الرسمية التى أصدرتها الوزارة مع الإجابات النموذجية الكاملة</div>
+        <a href="https://www.google.com/search?q=نماذج+امتحانات+ثانوية+عامة+2026+وزارة+التربية+والتعليم+مصر+pdf" target="_blank" class="link-btn link-btn-blue">📥 البحث عن نماذج الوزارة 2026</a>
+        <a href="https://emis.gov.eg" target="_blank" class="link-btn link-btn-blue" style="margin-top:0">🏛️ الموقع الرسمي للوزارة</a>
+      </div>
+
+      <!-- Score Distribution -->
+      <div style="background:linear-gradient(135deg,#1a0d3a,#0d0020);border:1px solid rgba(200,64,240,.25);border-radius:20px;padding:20px;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:800;color:var(--accent-purple);margin-bottom:14px">📊 توزيع الدرجات — علمى رياضه</div>
+        <div id="score-bars"></div>
+      </div>
+
+      <!-- Past Exams -->
+      <div class="section-title">📚 امتحانات السنوات الماضية</div>
+      <div class="filter-row" id="year-filters"></div>
+      <div id="exams-list"></div>
+    </div>
+  </div>
+
+  <!-- ============ SEARCH ============ -->
+  <div class="screen" id="screen-search">
+    <div class="header">
+      <div class="header-title">البحث الشامل</div>
+      <div style="font-size:26px">🔍</div>
+    </div>
+    <div style="padding:16px">
+      <!-- Toggle -->
+      <div class="toggle-group">
+        <button id="toggle-local" class="toggle-btn" onclick="setSearchScope('local')"
+          style="background:var(--gold);color:var(--bg)">🔍 داخل حازم</button>
+        <button id="toggle-external" class="toggle-btn" onclick="setSearchScope('external')"
+          style="background:rgba(240,192,64,0.08);border:1px solid rgba(240,192,64,.25);color:var(--gold)">🌐 بحث خارجي</button>
+      </div>
+      <!-- Input -->
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="search-btn" onclick="doSearch()">بحث</button>
+        <input id="search-input" class="search-input" placeholder="ابحث عن درس، مادة، موضوع..." onkeydown="if(event.key==='Enter')doSearch()">
+      </div>
+      <div id="search-results"></div>
+      <!-- External Links shown by default -->
+      <div id="external-links">
+        <div style="font-size:14px;color:#7a9abf;margin-bottom:12px">اختر الموقع للبحث فيه مباشرة</div>
+        <div id="ext-links-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SITES ============ -->
+  <div class="screen" id="screen-sites">
+    <div class="header">
+      <div class="header-title">مواقع تعليمية</div>
+      <div style="font-size:26px">🌐</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px">أهم المواقع والمنصات التعليمية للثانوية العامة 2026</div>
+      <div id="sites-list"></div>
+      <!-- Install Instructions -->
+      <div style="background:linear-gradient(135deg,rgba(240,192,64,.06),transparent);border:1px solid rgba(240,192,64,.2);border-radius:18px;padding:20px;margin-top:8px">
+        <div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px">📱 تثبيت حازم كأيقونة على موبايلك</div>
+        <div style="font-size:13px;color:#7a9abf;line-height:2">
+          1️⃣ افتح الملف في متصفح موبايلك (Chrome أو Safari)<br>
+          2️⃣ اضغط على قائمة المتصفح (⋮ أو مربع بسهم)<br>
+          3️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong><br>
+          4️⃣ اضغط إضافة ✅<br>
+          <strong style="color:var(--gold)">ستظهر أيقونة حازم 🎓 على شاشتك!</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">
+      <span class="icon">🏠</span>
+      <span class="label">الرئيسية</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-btn" id="nav-subjects" onclick="showScreen('subjects')">
+      <span class="icon">📚</span>
+      <span class="label">المواد</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-btn" id="nav-exams" onclick="showScreen('exams')">
+      <span class="icon">📝</span>
+      <span class="label">الامتحانات</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-btn" id="nav-search" onclick="showScreen('search')">
+      <span class="icon">🔍</span>
+      <span class="label">البحث</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-btn" id="nav-sites" onclick="showScreen('sites')">
+      <span class="icon">🌐</span>
+      <span class="label">مواقع</span>
+      <div class="nav-dot"></div>
+    </button>
+  </nav>
+</div>
+
+<script>
+// ===== DATA =====
+const subjects = [
+  {
+    id:"math", name:"الرياضيات", icon:"📐", color:"#1a3a6b", accent:"#4090f0",
+    chapters:[
+      { name:"حساب المثلثات", lessons:[
+        {title:"الزوايا وقياسها",video:"https://www.youtube.com/results?search_query=حساب+المثلثات+ثانوية+عامة+2026",exercises:12,years:["2023","2022","2021"]},
+        {title:"دوال المثلثات",video:"https://www.youtube.com/results?search_query=دوال+المثلثات+ثانوية+عامة",exercises:18,years:["2023","2022"]},
+        {title:"المتطابقات المثلثية",video:"https://www.youtube.com/results?search_query=المتطابقات+المثلثية+ثانوية+عامة",exercises:20,years:["2024","2023","2022"]},
+      ]},
+      { name:"الجبر والمعادلات", lessons:[
+        {title:"المعادلات التربيعية",video:"https://www.youtube.com/results?search_query=المعادلات+التربيعية+ثانوية+عامة",exercises:25,years:["2024","2023","2022","2021"]},
+        {title:"التحليل إلى عوامل",video:"https://www.youtube.com/results?search_query=التحليل+الى+عوامل+ثانوية",exercises:15,years:["2023","2021"]},
+        {title:"المتباينات",video:"https://www.youtube.com/results?search_query=المتباينات+رياضيات+ثانوية",exercises:14,years:["2022","2020"]},
+      ]},
+      { name:"التفاضل والتكامل", lessons:[
+        {title:"الاشتقاق وتطبيقاته",video:"https://www.youtube.com/results?search_query=الاشتقاق+ثانوية+عامة+مصر",exercises:30,years:["2024","2023","2022","2021","2020"]},
+        {title:"التكامل المحدود",video:"https://www.youtube.com/results?search_query=التكامل+المحدود+ثانوية+عامة",exercises:22,years:["2024","2023","2022"]},
+        {title:"التطبيقات الهندسية",video:"https://www.youtube.com/results?search_query=تطبيقات+هندسية+تفاضل+ثانوية",exercises:18,years:["2023","2022"]},
+      ]},
+      { name:"الإحصاء والاحتمالات", lessons:[
+        {title:"التوزيعات الإحصائية",video:"https://www.youtube.com/results?search_query=الاحصاء+ثانوية+عامة+2026",exercises:16,years:["2024","2023"]},
+        {title:"حساب الاحتمالات",video:"https://www.youtube.com/results?search_query=حساب+الاحتمالات+ثانوية+عامة",exercises:20,years:["2024","2023","2022"]},
+      ]},
+    ]
+  },
+  {
+    id:"physics", name:"الفيزياء", icon:"⚛️", color:"#0d3b2e", accent:"#00e5a0",
+    chapters:[
+      { name:"الميكانيكا", lessons:[
+        {title:"قوانين نيوتن للحركة",video:"https://www.youtube.com/results?search_query=قوانين+نيوتن+فيزياء+ثانوية+عامة",exercises:20,years:["2024","2023","2022"]},
+        {title:"الشغل والطاقة",video:"https://www.youtube.com/results?search_query=الشغل+والطاقة+فيزياء+ثانوية",exercises:18,years:["2023","2022","2021"]},
+        {title:"الحركة الدورانية",video:"https://www.youtube.com/results?search_query=الحركة+الدورانية+فيزياء+ثانوية",exercises:15,years:["2022","2020"]},
+      ]},
+      { name:"الكهرباء والمغناطيسية", lessons:[
+        {title:"الكهرباء الساكنة",video:"https://www.youtube.com/results?search_query=الكهرباء+الساكنة+فيزياء+ثانوية",exercises:22,years:["2024","2023","2022"]},
+        {title:"التيار المتردد",video:"https://www.youtube.com/results?search_query=التيار+المتردد+فيزياء+ثانوية",exercises:19,years:["2024","2023"]},
+        {title:"المجالات المغناطيسية",video:"https://www.youtube.com/results?search_query=المجالات+المغناطيسية+فيزياء+ثانوية",exercises:16,years:["2023","2021"]},
+      ]},
+      { name:"الضوء والموجات", lessons:[
+        {title:"انعكاس وانكسار الضوء",video:"https://www.youtube.com/results?search_query=انعكاس+انكسار+الضوء+فيزياء+ثانوية",exercises:14,years:["2022","2021","2020"]},
+        {title:"التداخل والحيود",video:"https://www.youtube.com/results?search_query=التداخل+والحيود+فيزياء+ثانوية",exercises:12,years:["2023","2022"]},
+      ]},
+    ]
+  },
+  {
+    id:"chemistry", name:"الكيمياء", icon:"🧪", color:"#3b0a6b", accent:"#c840f0",
+    chapters:[
+      { name:"الكيمياء العضوية", lessons:[
+        {title:"الهيدروكربونات",video:"https://www.youtube.com/results?search_query=الهيدروكربونات+كيمياء+ثانوية+عامة",exercises:18,years:["2024","2023","2022"]},
+        {title:"الكحولات والأحماض العضوية",video:"https://www.youtube.com/results?search_query=الكحولات+كيمياء+عضوية+ثانوية",exercises:16,years:["2024","2023"]},
+        {title:"البوليمرات",video:"https://www.youtube.com/results?search_query=البوليمرات+كيمياء+ثانوية+عامة",exercises:10,years:["2022","2021"]},
+      ]},
+      { name:"الكيمياء الفيزيائية", lessons:[
+        {title:"الاتزان الكيميائي",video:"https://www.youtube.com/results?search_query=الاتزان+الكيميائي+ثانوية+عامة",exercises:20,years:["2024","2023","2022"]},
+        {title:"الأحماض والقواعد",video:"https://www.youtube.com/results?search_query=الاحماض+والقواعد+كيمياء+ثانوية",exercises:22,years:["2024","2023"]},
+        {title:"الكيمياء الكهربائية",video:"https://www.youtube.com/results?search_query=الكيمياء+الكهربائية+ثانوية+عامة",exercises:15,years:["2023","2022","2021"]},
+      ]},
+    ]
+  },
+  {
+    id:"biology", name:"الأحياء", icon:"🧬", color:"#1a5c2a", accent:"#40e040",
+    chapters:[
+      { name:"علم الوراثة", lessons:[
+        {title:"الوراثة المندلية",video:"https://www.youtube.com/results?search_query=الوراثة+المندلية+احياء+ثانوية+عامة",exercises:16,years:["2024","2023","2022"]},
+        {title:"الوراثة المرتبطة بالجنس",video:"https://www.youtube.com/results?search_query=الوراثة+المرتبطة+بالجنس+احياء+ثانوية",exercises:14,years:["2024","2023"]},
+        {title:"الطفرات الجينية",video:"https://www.youtube.com/results?search_query=الطفرات+الجينية+احياء+ثانوية",exercises:12,years:["2022","2021"]},
+      ]},
+      { name:"وظائف الأعضاء", lessons:[
+        {title:"الجهاز العصبي",video:"https://www.youtube.com/results?search_query=الجهاز+العصبي+احياء+ثانوية+عامة",exercises:20,years:["2024","2023","2022"]},
+        {title:"الجهاز الهرموني",video:"https://www.youtube.com/results?search_query=الجهاز+الهرموني+احياء+ثانوية",exercises:18,years:["2023","2022","2021"]},
+        {title:"الجهاز المناعي",video:"https://www.youtube.com/results?search_query=الجهاز+المناعي+احياء+ثانوية+عامة",exercises:15,years:["2024","2022"]},
+      ]},
+    ]
+  },
+  {
+    id:"arabic", name:"اللغة العربية", icon:"📖", color:"#6b1a1a", accent:"#f04040",
+    chapters:[
+      { name:"النحو والصرف", lessons:[
+        {title:"الجملة الاسمية والفعلية",video:"https://www.youtube.com/results?search_query=النحو+الجملة+الاسمية+ثانوية+عامة",exercises:20,years:["2024","2023","2022"]},
+        {title:"الإعراب والبناء",video:"https://www.youtube.com/results?search_query=الاعراب+نحو+ثانوية+عامة+مصر",exercises:25,years:["2024","2023","2022","2021"]},
+        {title:"الأفعال وتصريفها",video:"https://www.youtube.com/results?search_query=الافعال+وتصريفها+نحو+ثانوية",exercises:18,years:["2023","2022"]},
+      ]},
+      { name:"البلاغة والأدب", lessons:[
+        {title:"علم البيان والبلاغة",video:"https://www.youtube.com/results?search_query=علم+البيان+بلاغة+ثانوية+عامة",exercises:15,years:["2024","2023","2022"]},
+        {title:"النصوص الأدبية",video:"https://www.youtube.com/results?search_query=النصوص+الادبية+عربي+ثانوية+عامة",exercises:12,years:["2024","2023"]},
+      ]},
+    ]
+  },
+  {
+    id:"english", name:"اللغة الإنجليزية", icon:"🇬🇧", color:"#1a2b6b", accent:"#4090f0",
+    chapters:[
+      { name:"Grammar", lessons:[
+        {title:"Tenses & Verb Forms",video:"https://www.youtube.com/results?search_query=English+grammar+tenses+Thanaweya+Amma+2026",exercises:22,years:["2024","2023","2022"]},
+        {title:"Conditionals & Modals",video:"https://www.youtube.com/results?search_query=conditionals+modals+Egyptian+high+school",exercises:18,years:["2024","2023"]},
+        {title:"Passive Voice",video:"https://www.youtube.com/results?search_query=passive+voice+Thanaweya+Amma+Egypt",exercises:16,years:["2023","2022","2021"]},
+      ]},
+      { name:"Reading & Writing", lessons:[
+        {title:"Reading Comprehension",video:"https://www.youtube.com/results?search_query=reading+comprehension+Egyptian+Thanaweya+2026",exercises:20,years:["2024","2023","2022"]},
+        {title:"Essay Writing",video:"https://www.youtube.com/results?search_query=essay+writing+Thanaweya+Amma+Egypt",exercises:15,years:["2024","2023"]},
+      ]},
+    ]
+  }
+];
+
+const pastExams = [
+  {year:2024,subject:"الرياضيات",type:"علمى رياضه",score:90,url:"https://www.google.com/search?q=امتحان+الرياضيات+ثانوية+عامة+2024+مصر+pdf"},
+  {year:2024,subject:"الفيزياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الفيزياء+ثانوية+عامة+2024+مصر"},
+  {year:2024,subject:"الكيمياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الكيمياء+ثانوية+عامة+2024+مصر"},
+  {year:2024,subject:"الأحياء",type:"علمى علوم",score:80,url:"https://www.google.com/search?q=امتحان+الاحياء+ثانوية+عامة+2024+مصر"},
+  {year:2023,subject:"الرياضيات",type:"علمى رياضه",score:90,url:"https://www.google.com/search?q=امتحان+الرياضيات+ثانوية+عامة+2023+مصر+pdf"},
+  {year:2023,subject:"الفيزياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الفيزياء+ثانوية+عامة+2023+مصر"},
+  {year:2023,subject:"الكيمياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الكيمياء+ثانوية+عامة+2023+مصر"},
+  {year:2022,subject:"الرياضيات",type:"علمى رياضه",score:90,url:"https://www.google.com/search?q=امتحان+الرياضيات+ثانوية+عامة+2022+مصر+pdf"},
+  {year:2022,subject:"الفيزياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الفيزياء+ثانوية+عامة+2022+مصر"},
+  {year:2022,subject:"الكيمياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الكيمياء+ثانوية+عامة+2022+مصر"},
+  {year:2021,subject:"الرياضيات",type:"علمى رياضه",score:90,url:"https://www.google.com/search?q=امتحان+الرياضيات+ثانوية+عامة+2021+مصر+pdf"},
+  {year:2021,subject:"الفيزياء",type:"علمى رياضه",score:80,url:"https://www.google.com/search?q=امتحان+الفيزياء+ثانوية+عامة+2021+مصر"},
+  {year:2020,subject:"الرياضيات",type:"علمى رياضه",score:90,url:"https://www.google.com/search?q=امتحان+الرياضيات+ثانوية+عامة+2020+مصر"},
+];
+
+const scores = [
+  {subject:"الرياضيات",total:90,parts:[["جبر ومثلثات",45],["هندسة وإحصاء",45]]},
+  {subject:"الفيزياء",total:80,parts:[["نظري",60],["عملي",20]]},
+  {subject:"الكيمياء",total:80,parts:[["نظري",60],["عملي",20]]},
+  {subject:"الأحياء",total:80,parts:[["نظري",60],["عملي",20]]},
+  {subject:"اللغة العربية",total:80,parts:[["نصوص وقراءة",40],["نحو وبلاغة",40]]},
+];
+
+const sites = [
+  {name:"وزارة التربية والتعليم",icon:"🏛️",url:"https://emis.gov.eg"},
+  {name:"المنصة التعليمية المصرية",icon:"💻",url:"https://www.elearning.edu.eg"},
+  {name:"نماذج امتحانات 2026",icon:"📝",url:"https://www.google.com/search?q=نماذج+امتحانات+ثانوية+عامة+2026+وزارة+التربية"},
+  {name:"يوتيوب — شرح المناهج",icon:"🎬",url:"https://www.youtube.com/results?search_query=ثانوية+عامة+2026+مصر+شرح"},
+  {name:"حل امتحانات السنوات الماضية",icon:"✅",url:"https://www.google.com/search?q=حل+امتحانات+ثانوية+عامة+مصر+السنوات+الماضية"},
+  {name:"كتب المناهج PDF",icon:"📚",url:"https://www.google.com/search?q=كتب+ثانوية+عامة+2026+مصر+pdf"},
+  {name:"بنك الأسئلة — جوجل",icon:"🔍",url:"https://www.google.com/search?q=بنك+اسئلة+ثانوية+عامة+مصر+2026"},
+  {name:"فيسبوك — مجموعات الثانوية",icon:"👥",url:"https://www.facebook.com/search/groups?q=ثانوية+عامة+2026+مصر"},
+];
+
+// ===== STATE =====
+let currentScreen = 'home';
+let currentSubject = null;
+let currentChapter = null;
+let currentLesson = null;
+let currentYear = 'all';
+let searchScope = 'local';
+
+// ===== STARS =====
+function makeStars() {
+  const c = document.getElementById('stars-container');
+  for(let i=0;i<60;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random()*3+1;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${Math.random()*.7+.1};--d:${(Math.random()*3+2).toFixed(1)}s;--delay:${(Math.random()*3).toFixed(1)}s`;
+    c.appendChild(s);
+  }
+}
+
+// ===== INIT =====
+window.onload = function() {
+  makeStars();
+  buildSubjectsList();
+  buildExams();
+  buildSites();
+  buildScores();
+  buildExtLinks();
+  setTimeout(() => {
+    document.getElementById('splash').style.transition = 'opacity .8s';
+    document.getElementById('splash').style.opacity = '0';
+    setTimeout(() => {
+      document.getElementById('splash').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+    }, 800);
+  }, 2600);
+};
+
+// ===== NAVIGATION =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const nb = document.getElementById('nav-' + name);
+  if(nb) nb.classList.add('active');
+  currentScreen = name;
+  // Scroll top
+  document.getElementById('screen-' + name).scrollTop = 0;
+}
+
+function showSubjectDetail(idx) {
+  currentSubject = subjects[idx];
+  document.getElementById('subj-detail-title').textContent = currentSubject.name;
+  document.getElementById('subj-detail-icon').textContent = currentSubject.icon;
+  // Hero
+  document.getElementById('subj-detail-hero').innerHTML = `
+    <div style="background:linear-gradient(135deg,${currentSubject.color},#050d1f);padding:24px;border-radius:0;margin:-1px">
+      <div style="font-size:52px">${currentSubject.icon}</div>
+      <div style="font-size:22px;font-weight:700;margin-top:8px">${currentSubject.name}</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap">
+        <span class="badge" style="background:${currentSubject.accent}18;border:1px solid ${currentSubject.accent}30;color:${currentSubject.accent}">${currentSubject.chapters.length} وحدة</span>
+        <span class="badge" style="background:${currentSubject.accent}18;border:1px solid ${currentSubject.accent}30;color:${currentSubject.accent}">${currentSubject.chapters.reduce((a,c)=>a+c.lessons.length,0)} درس</span>
+        <span class="badge" style="background:${currentSubject.accent}18;border:1px solid ${currentSubject.accent}30;color:${currentSubject.accent}">${currentSubject.chapters.reduce((a,c)=>a+c.lessons.reduce((b,l)=>b+l.exercises,0),0)} تمرين</span>
+      </div>
+    </div>`;
+  // Chapters
+  const cl = document.getElementById('chapters-list');
+  cl.innerHTML = '';
+  currentSubject.chapters.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'card';
+    btn.style.cssText = `border-color:${currentSubject.accent}22;animation:fadeIn ${.2+i*.1}s ease both`;
+    btn.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="width:32px;height:32px;border-radius:50%;background:${currentSubject.accent}18;color:${currentSubject.accent};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">←</div>
+        <div style="text-align:right">
+          <div style="font-size:15px;font-weight:700">${ch.name}</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:3px">${ch.lessons.length} درس • ${ch.lessons.reduce((a,l)=>a+l.exercises,0)} تمرين</div>
+        </div>
+      </div>`;
+    btn.onclick = () => showChapterDetail(i);
+    cl.appendChild(btn);
+  });
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-subject-detail').classList.add('active');
+}
+
+function showChapterDetail(idx) {
+  currentChapter = currentSubject.chapters[idx];
+  document.getElementById('chap-detail-title').textContent = currentChapter.name;
+  const ll = document.getElementById('lessons-list');
+  ll.innerHTML = '';
+  currentChapter.lessons.forEach((lesson, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'card';
+    btn.style.cssText = `border-color:${currentSubject.accent}22;animation:fadeIn ${.15+i*.1}s ease both`;
+    btn.innerHTML = `
+      <div style="font-size:16px;font-weight:800;margin-bottom:10px;text-align:right">${lesson.title}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;justify-content:flex-end">
+        ${lesson.years.map(y=>`<span class="badge badge-gold">${y} ✓</span>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <span class="badge badge-green">🎬 فيديو شرح</span>
+        <span class="badge badge-blue">✏️ ${lesson.exercises} تمرين</span>
+      </div>`;
+    btn.onclick = () => showLessonDetail(i);
+    ll.appendChild(btn);
+  });
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-chapter-detail').classList.add('active');
+}
+
+function showLessonDetail(idx) {
+  currentLesson = currentChapter.lessons[idx];
+  document.getElementById('lesson-title-h').textContent = currentLesson.title;
+  const q = encodeURIComponent(currentLesson.title);
+  document.getElementById('lesson-content').innerHTML = `
+    <!-- VIDEO -->
+    <a href="${currentLesson.video}" target="_blank" style="text-decoration:none;display:block;margin-bottom:12px">
+      <div style="background:linear-gradient(135deg,#1a0d00,#3a2000);border:1px solid rgba(255,100,0,.3);border-radius:18px;padding:20px;display:flex;align-items:center;gap:16px;animation:glow 3s ease-in-out infinite">
+        <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#ff4000,#ff8000);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">▶️</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#fff">مشاهدة شرح الدرس</div>
+          <div style="font-size:12px;color:#ff8040;margin-top:3px">يوتيوب • شرح وافي ومبسط</div>
+        </div>
+      </div>
+    </a>
+
+    <!-- EXERCISES -->
+    <div style="background:linear-gradient(135deg,#001a3a,#000d1f);border:1px solid rgba(64,144,240,.25);border-radius:18px;padding:18px;margin-bottom:12px">
+      <div style="font-size:15px;font-weight:700;color:var(--accent-blue);margin-bottom:12px">✏️ التمارين والتدريبات (${currentLesson.exercises} تمرين)</div>
+      <a href="https://www.google.com/search?q=تمارين+${q}+ثانوية+عامة+2026" target="_blank" class="link-btn link-btn-blue">📥 تحميل تمارين الدرس</a>
+      <a href="https://www.google.com/search?q=حل+تمارين+${q}+ثانوية+عامة" target="_blank" class="link-btn link-btn-green" style="margin-top:0">✅ الإجابات النموذجية</a>
+    </div>
+
+    <!-- PAST EXAMS -->
+    <div style="background:linear-gradient(135deg,#1a0d3a,#0d0020);border:1px solid rgba(200,64,240,.25);border-radius:18px;padding:18px;margin-bottom:12px">
+      <div style="font-size:15px;font-weight:700;color:var(--accent-purple);margin-bottom:12px">📅 جاء في امتحانات</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${currentLesson.years.map(y=>`<a href="https://www.google.com/search?q=${q}+امتحان+ثانوية+عامة+${y}+مصر" target="_blank" class="badge badge-purple" style="text-decoration:none;font-size:13px;padding:7px 14px">سنة ${y} →</a>`).join('')}
+      </div>
+    </div>
+
+    <!-- IMPORTANT QS -->
+    <div style="background:linear-gradient(135deg,#1a1a00,#0d0d00);border:1px solid rgba(240,192,64,.25);border-radius:18px;padding:18px">
+      <div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px">⭐ الأسئلة المهمة والمتوقعة</div>
+      <a href="https://www.google.com/search?q=اهم+اسئلة+${q}+ثانوية+عامة+2026" target="_blank" class="link-btn link-btn-gold">🔍 الأسئلة المتوقعة 2026</a>
+      <a href="https://www.youtube.com/results?search_query=مراجعة+${q}+ثانوية+عامة" target="_blank" class="link-btn link-btn-red" style="margin-top:0">🎬 فيديو مراجعة الدرس</a>
+    </div>
+  `;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-lesson-detail').classList.add('active');
+}
+
+function backToSubject() {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-subject-detail').classList.add('active');
+}
+
+function backToChapter() {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-chapter-detail').classList.add('active');
+}
+
+// ===== BUILD SUBJECTS LIST =====
+function buildSubjectsList() {
+  const list = document.getElementById('subjects-list');
+  subjects.forEach((sub, i) => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `background:linear-gradient(135deg,${sub.color}cc,${sub.color}44);border:1px solid ${sub.accent}30;border-radius:20px;padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;width:100%;margin-bottom:12px;animation:fadeIn ${.2+i*.1}s ease both;transition:all .2s`;
+    btn.innerHTML = `
+      <div style="font-size:38px">${sub.icon}</div>
+      <div style="flex:1;text-align:right">
+        <div style="font-size:18px;font-weight:700;color:#e8f0ff;font-family:'Cairo',sans-serif">${sub.name}</div>
+        <div style="font-size:12px;color:#7a9abf;margin-top:3px;font-family:'Cairo',sans-serif">${sub.chapters.length} وحدة • ${sub.chapters.reduce((a,c)=>a+c.lessons.length,0)} درس</div>
+      </div>
+      <div style="width:34px;height:34px;border-radius:50%;background:${sub.accent}18;border:1px solid ${sub.accent}35;display:flex;align-items:center;justify-content:center;color:${sub.accent};font-size:15px;flex-shrink:0">←</div>`;
+    btn.onclick = () => showSubjectDetail(i);
+    list.appendChild(btn);
+  });
+}
+
+// ===== BUILD SCORES =====
+function buildScores() {
+  const container = document.getElementById('score-bars');
+  scores.forEach(item => {
+    container.innerHTML += `
+      <div class="score-row">
+        <div class="score-head">
+          <span style="font-size:14px;font-weight:700;color:var(--accent-purple)">${item.total} درجة</span>
+          <span style="font-size:14px;font-weight:700">${item.subject}</span>
+        </div>
+        <div class="score-bars">
+          ${item.parts.map(([label,val])=>`
+            <div style="flex:${val};background:rgba(200,64,240,${val/item.total*.65});border:1px solid rgba(200,64,240,.3);border-radius:8px;padding:5px 8px;text-align:center">
+              <div style="font-size:13px;font-weight:800;color:#e080ff">${val}</div>
+              <div style="font-size:10px;color:#9a6abf">${label}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  });
+}
+
+// ===== BUILD EXAMS =====
+let examYear = 'all';
+function buildExams(year='all') {
+  examYear = year;
+  // Filters
+  const fr = document.getElementById('year-filters');
+  fr.innerHTML = '';
+  ['all','2024','2023','2022','2021','2020'].forEach(y => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-pill' + (y===year?' active':'');
+    btn.textContent = y==='all'?'الكل':y;
+    btn.onclick = () => buildExams(y);
+    fr.appendChild(btn);
+  });
+  // List
+  const list = document.getElementById('exams-list');
+  list.innerHTML = '';
+  const filtered = year==='all' ? pastExams : pastExams.filter(e=>e.year.toString()===year);
+  filtered.forEach((exam,i) => {
+    list.innerHTML += `
+      <div class="card" style="animation:fadeIn ${.1+i*.07}s ease both;cursor:default">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <a href="${exam.url}" target="_blank" class="link-btn link-btn-gold" style="margin:0;padding:7px 14px;font-size:12px">📥 تحميل</a>
+          <div style="text-align:right">
+            <div style="font-size:14px;font-weight:700">${exam.subject}</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px">${exam.year} • ${exam.type} • ${exam.score} درجة</div>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+// ===== SEARCH =====
+function setSearchScope(scope) {
+  searchScope = scope;
+  if(scope==='local'){
+    document.getElementById('toggle-local').style.cssText = 'background:var(--gold);color:var(--bg);border:none';
+    document.getElementById('toggle-external').style.cssText = 'background:rgba(240,192,64,0.08);border:1px solid rgba(240,192,64,.25);color:var(--gold)';
+    document.getElementById('external-links').style.display='none';
+    document.getElementById('search-results').style.display='block';
+  } else {
+    document.getElementById('toggle-external').style.cssText = 'background:var(--gold);color:var(--bg);border:none';
+    document.getElementById('toggle-local').style.cssText = 'background:rgba(240,192,64,0.08);border:1px solid rgba(240,192,64,.25);color:var(--gold)';
+    document.getElementById('external-links').style.display='block';
+    document.getElementById('search-results').style.display='none';
+  }
+}
+
+function buildExtLinks() {
+  const q = document.getElementById('search-input') ? document.getElementById('search-input').value : '';
+  document.getElementById('ext-links-list').innerHTML = [
+    {name:"🔍 بحث في جوجل",url:`https://www.google.com/search?q=${encodeURIComponent((q||'ثانوية عامة')+'ثانوية عامة مصر 2026')}`},
+    {name:"🎬 بحث في يوتيوب",url:`https://www.youtube.com/results?search_query=${encodeURIComponent((q||'ثانوية عامة')+' مصر 2026')}`},
+    {name:"🏛️ موقع الوزارة",url:"https://emis.gov.eg"},
+    {name:"📚 المنصة التعليمية",url:"https://www.elearning.edu.eg"},
+  ].map(s=>`<a href="${s.url}" target="_blank" class="link-btn link-btn-blue" style="font-size:14px">${s.name}</a>`).join('');
+}
+
+function doSearch() {
+  const q = document.getElementById('search-input').value.trim();
+  if(!q) return;
+  if(searchScope==='external'){
+    buildExtLinks();
+    return;
+  }
+  const results = [];
+  subjects.forEach(sub => {
+    sub.chapters.forEach(ch => {
+      ch.lessons.forEach(lesson => {
+        if(lesson.title.includes(q) || sub.name.includes(q) || ch.name.includes(q)){
+          results.push({sub,ch,lesson});
+        }
+      });
+    });
+  });
+  const sr = document.getElementById('search-results');
+  if(results.length===0){
+    sr.innerHTML = `<div style="text-align:center;padding:30px;color:#4a6080;background:rgba(255,255,255,.02);border-radius:16px">لا توجد نتائج. جرّب البحث الخارجي 🌐</div>`;
+  } else {
+    sr.innerHTML = `<div style="font-size:13px;color:var(--text-dim);margin-bottom:10px">${results.length} نتيجة لـ "${q}"</div>`;
+    results.forEach((r,i)=>{
+      const btn = document.createElement('button');
+      btn.className='card';
+      btn.style.cssText=`animation:fadeIn ${.1*i}s ease both`;
+      btn.innerHTML=`<div style="font-size:14px;font-weight:700">${r.lesson.title}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px">${r.sub.name} ← ${r.ch.name}</div>`;
+      btn.onclick=()=>{
+        currentSubject=r.sub; currentChapter=r.ch;
+        showSubjectDetail(subjects.indexOf(r.sub));
+        setTimeout(()=>showChapterDetail(r.sub.chapters.indexOf(r.ch)),10);
+        setTimeout(()=>showLessonDetail(r.ch.lessons.indexOf(r.lesson)),20);
+      };
+      sr.appendChild(btn);
+    });
+  }
+}
+
+// ===== SITES =====
+function buildSites(){
+  document.getElementById('sites-list').innerHTML = sites.map((s,i)=>`
+    <a href="${s.url}" target="_blank" style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#0d1e36,#0a1628);border:1px solid rgba(240,192,64,.12);border-radius:18px;padding:16px;margin-bottom:10px;text-decoration:none;color:var(--text);animation:fadeIn ${.15+i*.08}s ease both;transition:all .2s">
+      <div style="width:46px;height:46px;border-radius:13px;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${s.icon}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700">${s.name}</div>
+        <div style="font-size:11px;color:#4a8abf;margin-top:2px">اضغط للزيارة ↗</div>
+      </div>
+    </a>`).join('');
+}
+
+// Init search scope display
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('external-links').style.display='none';
+});
+</script>
+</body>
+</html>
